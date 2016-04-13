@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
+
 import android.util.Log;
 
 public class Segment {
@@ -14,6 +16,7 @@ public class Segment {
 	private int segLength = -1;
 	private boolean Intergrity = false;
 	private static Random random = new Random();
+	private int percent = 0;
 
 	public synchronized void setSegLength(int segLength) {
 		if (this.segLength == -1) {
@@ -30,15 +33,17 @@ public class Segment {
 	public boolean insert(FileFragment fm) {
 		synchronized (this) {
 			if (fm.isWritten() && fm.getSegmentID() == segmentID && !Intergrity) {
+				percent += fm.getFragLength();
 				segmentList.add(fm.clone());
 				Collections.sort(segmentList);
+				setSegLength(fm.getSegmentLen());
 				return true;
 			}
 			return false;
 		}
 	}
 
-	private void merge() throws Exception {
+	private void merge() throws SegmentException {
 		if (segmentList == null || segmentList.size() <= 1) {
 			return;
 		}
@@ -52,45 +57,52 @@ public class Segment {
 			if (prev.getStartIndex() == next.getStartIndex()) {
 				if (prev.getFragLength() <= next.getFragLength()) {
 					segmentList.remove(i);
+					percent -= prev.getFragLength();
 				} else {
 					segmentList.remove(i + 1);
+					percent -= next.getFragLength();
 				}
 				size--;
 				i--;
 				continue;
 			} else if (prev.getStartIndex() < next.getStartIndex()) {
 				if (prev.getStopIndex() < next.getStopIndex()) {
+					percent -= prev.getFragLength();
 					prev.setData(next.getData(), next.getStartIndex());
+					percent += prev.getFragLength();
 					Log.d(TAG, "" + segLength + " " + prev.getStopIndex());
 				}
 				segmentList.remove(i + 1);
+				percent -= next.getFragLength();
 				size--;
 				i--;
 			} else {
-				throw new Exception("Not Sort");
+				throw new SegmentException("Not Sort");
 			}
 		}
 	}
 
 	public boolean checkIntegrity() {
 		if (Intergrity)
-			return true;
+			return Intergrity;
 		synchronized (this) {
 			if (segmentList == null) {
-				return false;
+				return Intergrity;
 			}
 			try {
 				merge();
-			} catch (Exception e) {
+			} catch (SegmentException e) {
 				e.printStackTrace();
 			}
 
 			if (segmentList.size() == 1
 					&& segmentList.get(0).getFragLength() == segLength) {
 				Intergrity = true;
-				return true;
+				Log.w(TAG, "Percent " + getPercent());
+				return Intergrity;
 			}
-			return false;
+			Log.w(TAG, "Percent " + getPercent());
+			return Intergrity;
 		}
 
 	}
@@ -125,16 +137,16 @@ public class Segment {
 		}
 	}
 
-	public FileFragment getFragment(int start) throws Exception {
+	public FileFragment getFragment(int start) throws FileFragmentException {
 		byte[] data = getData(start);
 		if (data == null)
 			return null;
-		FileFragment f = new FileFragment(start, start + data.length, segmentID);
+		FileFragment f = new FileFragment(start, start + data.length, segmentID,segLength);
 		f.setData(data);
 		return f;
 	}
 
-	public int getMiss() throws Exception {
+	public int getMiss() throws SegmentException {
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e1) {
@@ -149,11 +161,23 @@ public class Segment {
 				return 0;
 			}
 			if (checkIntegrity())
-				throw new Exception("No Fragment Miss");
+				throw new SegmentException("No Fragment Miss");
 			if (size == 1) {
 				return segmentList.get(0).getStopIndex();
 			}
 			return segmentList.get(random.nextInt(size - 1)).getStopIndex();
+		}
+	}
+
+	public double getPercent() {
+		return percent * 100.0 / segLength;
+	}
+
+	public class SegmentException extends Exception {
+		private static final long serialVersionUID = 1187571347280690149L;
+
+		public SegmentException(String string) {
+			super(string);
 		}
 	}
 }

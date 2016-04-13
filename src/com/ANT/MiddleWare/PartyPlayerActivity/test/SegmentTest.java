@@ -5,12 +5,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 
-import com.ANT.MiddleWare.Entities.FileFragment;
-import com.ANT.MiddleWare.Entities.Segment;
-
 import junit.framework.Assert;
 import android.test.AndroidTestCase;
-import android.util.Log;
+
+import com.ANT.MiddleWare.Entities.FileFragment;
+import com.ANT.MiddleWare.Entities.Segment;
 
 /**
  * @author zxyqwe
@@ -45,7 +44,7 @@ public class SegmentTest extends AndroidTestCase {
 			int stop = i == fra - 1 ? base : setSort.get(i + 1)
 					+ random.nextInt(base - setSort.get(i + 1));
 
-			FileFragment tmp = new FileFragment(start, stop, 1);
+			FileFragment tmp = new FileFragment(start, stop, 1,base);
 			tmp.setData(data.substring(start, stop).getBytes());
 			fraList.add(tmp);
 		}

@@ -3,6 +3,7 @@ package com.ANT.MiddleWare.Celluar.CellMore;
 import android.util.Log;
 
 import com.ANT.MiddleWare.Entities.Segment;
+import com.ANT.MiddleWare.Entities.Segment.SegmentException;
 import com.ANT.MiddleWare.Integrity.IntegrityCheck;
 
 public class CellularMore extends Thread {
@@ -23,7 +24,7 @@ public class CellularMore extends Thread {
 				int miss;
 				try {
 					miss = Seg.getMiss();
-				} catch (Exception e) {
+				} catch (SegmentException e) {
 					e.printStackTrace();
 					break;
 				}

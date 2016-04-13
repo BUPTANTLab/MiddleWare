@@ -1,5 +1,6 @@
 package com.ANT.MiddleWare.PartyPlayerActivity;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import android.os.Bundle;
@@ -11,7 +12,6 @@ import android.view.Window;
 
 public class MainActivity extends FragmentActivity {
 	private static final String TAG = MainActivity.class.getSimpleName();
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,14 @@ public class MainActivity extends FragmentActivity {
 							"setOptionalIconsVisible", Boolean.TYPE);
 					m.setAccessible(true);
 					m.invoke(menu, true);
-				} catch (Exception e) {
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
 				}
 			}
 		}

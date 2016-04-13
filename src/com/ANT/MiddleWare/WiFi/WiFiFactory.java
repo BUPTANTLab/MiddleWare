@@ -1,9 +1,12 @@
 package com.ANT.MiddleWare.WiFi;
 
+import java.io.IOException;
+
 import android.content.Context;
 import android.util.Log;
 
 import com.ANT.MiddleWare.Entities.FileFragment;
+import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
 import com.ANT.MiddleWare.WiFi.WiFiBT.WiFiBT;
 import com.ANT.MiddleWare.WiFi.WiFiBroad.WiFiBroad;
 import com.ANT.MiddleWare.WiFi.WiFiNCP2.WiFiNCP2;
@@ -23,7 +26,7 @@ public class WiFiFactory {
 	}
 
 	public static void changeInstance(Context contect, WiFiType type)
-			throws Exception {
+			throws InterruptedException, IOException {
 		synchronized (TAG) {
 			if (type != ins_type) {
 				Log.d(TAG, "INS_TYPE " + ins_type + " " + type);
@@ -66,7 +69,8 @@ public class WiFiFactory {
 		}
 	}
 
-	public static void EmergencySend(byte[] data) throws Exception {
+	public static void EmergencySend(byte[] data) throws FileFragmentException,
+			IOException {
 		synchronized (TAG) {
 			instance.EmergencySend(data);
 		}

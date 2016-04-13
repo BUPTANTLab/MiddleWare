@@ -1,11 +1,10 @@
-package com.ANT.MiddleWare.Celluar.SingleCell;
+package com.ANT.MiddleWare.Celluar.GroupCell;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 
 import android.util.Log;
 
@@ -16,15 +15,13 @@ import com.ANT.MiddleWare.Integrity.IntegrityCheck;
 import com.ANT.MiddleWare.PartyPlayerActivity.ConfigureData;
 import com.ANT.MiddleWare.PartyPlayerActivity.MainFragment;
 
-public class SingleCell extends Thread {
-	private static final String TAG = SingleCell.class.getSimpleName();
+public class GroupCell extends Thread {
+	private static final String TAG = GroupCell.class.getSimpleName();
 	private int url;
-	private String time;
 
-	public SingleCell(int url) {
+	public GroupCell(int url) {
 		super();
 		this.url = url;
-		time = "" + new Date().getTime();
 	}
 
 	@Override
@@ -37,9 +34,9 @@ public class SingleCell extends Thread {
 			if (MainFragment.configureData.getWorkingMode() == ConfigureData.WorkMode.JUNIT_TEST_MODE) {
 				uurl = new URL(IntegrityCheck.JUNIT_TAG);
 			} else {
-				uurl = new URL(IntegrityCheck.URL_TAG + "?filename=" + url
-						+ ".mp4&sessionid=lykfr9oyqipf2q3tvy" + time + "&rate="
-						+ MainFragment.rateTag);
+				uurl = new URL(IntegrityCheck.GROUP_TAG + "?filename=" + url
+						+ ".mp4&sessionid=lykfr9oyqipf2q3tvy"
+						+ MainFragment.taskID + "&rate=" + MainFragment.rateTag);
 			}
 			Log.d(TAG, "" + uurl);
 			while (true) {

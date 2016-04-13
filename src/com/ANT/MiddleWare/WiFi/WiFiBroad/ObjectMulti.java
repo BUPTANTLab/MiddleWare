@@ -1,6 +1,8 @@
 package com.ANT.MiddleWare.WiFi.WiFiBroad;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.OptionalDataException;
 import java.io.PipedInputStream;
 import java.io.StreamCorruptedException;
 
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.ANT.MiddleWare.Entities.FileFragment;
+import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
 import com.ANT.MiddleWare.Entities.Segment;
 import com.ANT.MiddleWare.Integrity.IntegrityCheck;
 import com.ANT.MiddleWare.WiFi.WiFiFactory;
@@ -19,10 +22,12 @@ public class ObjectMulti extends Thread {
 
 	private Context activity;
 	private PipedInputStream pi;
+	private SendMulti sm;
 
-	public ObjectMulti(PipedInputStream pi, Context activity) {
+	public ObjectMulti(PipedInputStream pi, Context activity, SendMulti sm) {
 		this.activity = activity;
 		this.pi = pi;
+		this.sm = sm;
 	}
 
 	@Override
@@ -39,8 +44,11 @@ public class ObjectMulti extends Thread {
 			 * header.
 			 */
 			oi = new ObjectInputStream(pi);
-		} catch (Exception e1) {
-			e1.printStackTrace();
+		} catch (StreamCorruptedException e) {
+			e.printStackTrace();
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
 			return;
 		}
 		while (true) {
@@ -60,6 +68,7 @@ public class ObjectMulti extends Thread {
 						Segment s = IntegrityCheck.getInstance().getSeg(
 								ff.getStartIndex());
 						FileFragment f = s.getFragment(ff.getStopIndex());
+						sm.removeRepeat(f);
 						WiFiFactory.insertF(f);
 						break;
 					case WiFiBroad.EMERGEN_SEND_TAG:
@@ -82,7 +91,13 @@ public class ObjectMulti extends Thread {
 			} catch (StreamCorruptedException e) {
 				// Thrown when control information that was read from an object
 				// stream violates internal consistency checks.
-			} catch (Exception e) {
+			} catch (OptionalDataException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (FileFragmentException e) {
 				e.printStackTrace();
 			}
 		}

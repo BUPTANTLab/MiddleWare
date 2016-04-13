@@ -1,6 +1,7 @@
 package com.ANT.MiddleWare.WiFi.WiFiBroad;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.DatagramPacket;
@@ -14,6 +15,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.ANT.MiddleWare.Entities.FileFragment;
+import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
 import com.ANT.MiddleWare.WiFi.WiFiFactory;
 import com.ANT.MiddleWare.WiFi.WiFiPulic;
 
@@ -34,14 +36,14 @@ public class WiFiBroad extends WiFiPulic {
 	public static final int EMERGEN_SEND_TAG = -2;
 	public static final int FRAG_REQST_TAG = -3;
 
-	public WiFiBroad(Context contect) throws Exception {
+	public WiFiBroad(Context contect) throws IOException, InterruptedException {
 		super(contect);
 
 		tm = (TelephonyManager) contect
 				.getSystemService(Activity.TELEPHONY_SERVICE);
 
-		//pi.connect(po);
-		//po.connect(pi);
+		// pi.connect(po);
+		// po.connect(pi);
 
 		String s = tm.getDeviceId();
 		int len = s.length();
@@ -72,17 +74,19 @@ public class WiFiBroad extends WiFiPulic {
 
 		recvThd = new RecvMulti(po, contect, socket);
 		recvThd.start();
-
-		objThd = new ObjectMulti(pi, contect);
-		objThd.start();
-
+		
 		sendThd = new SendMulti(socket, taskList);
 		sendThd.start();
+
+		objThd = new ObjectMulti(pi, contect,sendThd);
+		objThd.start();
+
 	}
 
 	@Override
-	public void EmergencySend(byte[] data) throws Exception {
-		FileFragment f = new FileFragment(0, data.length, EMERGEN_SEND_TAG);
+	public void EmergencySend(byte[] data) throws FileFragmentException,
+			IOException {
+		FileFragment f = new FileFragment(0, data.length, EMERGEN_SEND_TAG,-1);
 		f.setData(data);
 		data = f.toBytes();
 		DatagramPacket dp = new DatagramPacket(data, data.length,
@@ -98,19 +102,19 @@ public class WiFiBroad extends WiFiPulic {
 			recvThd.interrupt();
 			recvThd.join();
 		}
-		if (objThd != null) {
-			objThd.interrupt();
-			objThd.join();
-		}
 		if (sendThd != null) {
 			sendThd.interrupt();
 			sendThd.join();
+		}
+		if (objThd != null) {
+			objThd.interrupt();
+			objThd.join();
 		}
 	}
 
 	@Override
 	public void notify(int seg, int start) {
-		FileFragment ff = new FileFragment(seg, start, FRAG_REQST_TAG);
+		FileFragment ff = new FileFragment(seg, start, FRAG_REQST_TAG,-1);
 		WiFiFactory.insertF(ff);
 	}
 }

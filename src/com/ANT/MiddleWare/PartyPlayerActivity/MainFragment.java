@@ -1,7 +1,9 @@
 package com.ANT.MiddleWare.PartyPlayerActivity;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,6 +37,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.ANT.MiddleWare.DASHProxyServer.DashProxyServer;
+import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
 import com.ANT.MiddleWare.WiFi.WiFiFactory;
 import com.ANT.MiddleWare.WiFi.WiFiFactory.WiFiType;
 
@@ -54,11 +57,12 @@ public class MainFragment extends Fragment {
 	// private Button btHigh;
 
 	private DashProxyServer server = new DashProxyServer();
-	public static ConfigureData configureData = new ConfigureData(null);;
+	public static ConfigureData configureData = new ConfigureData(null);
 	private static final boolean SEVER_START_TAG = true;
 	private static final boolean SEVER_STOP_TAG = false;
 	private static final String SETTING_DIALOG_TAG = "setting";
 	public static String rateTag = "";
+	public static String taskID = "" + new Date().getTime();
 
 	private Handler myHandler;
 	private boolean adhocSelect = false;
@@ -116,7 +120,9 @@ public class MainFragment extends Fragment {
 					try {
 						WiFiFactory.changeInstance(getActivity(),
 								WiFiType.BROAD);
-					} catch (Exception e) {
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
 
@@ -152,8 +158,11 @@ public class MainFragment extends Fragment {
 					try {
 						WiFiFactory.EmergencySend("I am Captain!"
 								.getBytes("UTF-8"));
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					} catch (FileFragmentException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
 					myHandler.post(new Runnable() {

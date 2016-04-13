@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import android.util.Log;
 
 import com.ANT.MiddleWare.Celluar.CellMore.CellularMore;
+import com.ANT.MiddleWare.Celluar.GroupCell.GroupCell;
 import com.ANT.MiddleWare.Celluar.SingleCell.SingleCell;
 import com.ANT.MiddleWare.Celluar.WiFiMore.WiFiMore;
 
@@ -34,6 +35,11 @@ public class CellularDown {
 			cachedThreadPool.execute(new WiFiMore(url));
 			break;
 		case NOCELL:
+			break;
+		case DASH:
+			break;
+		case GROUP:
+			cachedThreadPool.execute(new GroupCell(url));
 			break;
 		default:
 			break;

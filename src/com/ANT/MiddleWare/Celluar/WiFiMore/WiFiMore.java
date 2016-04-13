@@ -3,6 +3,7 @@ package com.ANT.MiddleWare.Celluar.WiFiMore;
 import android.util.Log;
 
 import com.ANT.MiddleWare.Entities.Segment;
+import com.ANT.MiddleWare.Entities.Segment.SegmentException;
 import com.ANT.MiddleWare.Integrity.IntegrityCheck;
 import com.ANT.MiddleWare.WiFi.WiFiFactory;
 
@@ -24,7 +25,7 @@ public class WiFiMore extends Thread {
 				int miss;
 				try {
 					miss = Seg.getMiss();
-				} catch (Exception e) {
+				} catch (SegmentException e) {
 					e.printStackTrace();
 					break;
 				}
