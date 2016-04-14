@@ -33,7 +33,7 @@ public class ReadThread extends Thread {
                     Message message = (Message) objectInputStream.readObject();
                     objectInputStream.close();
                     byteArrayInputStream.close();
-                    System.out.println("收到message:"+message.getFragment());
+                    System.out.println("收到message:"+message.getMessage());
                 }
             }
         } catch (IOException e) {

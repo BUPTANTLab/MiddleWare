@@ -18,7 +18,8 @@ public class WriteThread extends Thread {
     @Override
     public void run() {
         System.out.println("write start");
-        Message msgObj = new Message();
+        PeerMessage msgObj = new PeerMessage();
+        msgObj.setMessage("I am client");
         byte[] bytesObj = null;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {

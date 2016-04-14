@@ -8,12 +8,18 @@ import java.io.Serializable;
 /**
  * Created by ge on 2016/4/12.
  */
-public class Message implements Serializable {
+public abstract class Message implements Serializable {
     private String fragment = "123123";
-    public String getFragment() {
-        return fragment;
+    public enum Type {A,B};
+    private Type type;
+    public abstract String getMessage();
+    public abstract void setMessage(String msg);
+    public Type getType(){
+    	return type;
     }
-
+    public void setType(Type type){
+    	this.type = type;
+    }
     public void getBytes() {
         try {
             ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Message.txt"));
