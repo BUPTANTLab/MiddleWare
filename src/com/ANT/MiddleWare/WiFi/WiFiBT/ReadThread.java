@@ -6,14 +6,18 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import android.content.Context;
+import android.widget.Toast;
+
 /**
  * Created by ge on 2016/4/12.
  */
 public class ReadThread extends Thread {
     private SocketChannel sc;
-
-    public ReadThread(SocketChannel sc) {
+    private Context context;
+    public ReadThread(SocketChannel sc,Context context) {
         this.sc = sc;
+        this.context = context;
     }
 
     @Override
@@ -33,7 +37,8 @@ public class ReadThread extends Thread {
                     Message message = (Message) objectInputStream.readObject();
                     objectInputStream.close();
                     byteArrayInputStream.close();
-                    System.out.println("收到message:"+message.getMessage());
+                    System.out.println("收到message:"+message.getMessage()+" type:"+message.getType().toString());
+//                    Toast.makeText(context, message.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         } catch (IOException e) {

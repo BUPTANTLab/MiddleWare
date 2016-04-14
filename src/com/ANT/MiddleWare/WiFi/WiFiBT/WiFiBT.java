@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.ANT.MiddleWare.WiFi.WiFiPulic;
+import com.ANT.MiddleWare.WiFi.WiFiBT.Message.Type;
 
 public class WiFiBT extends WiFiPulic {
 	private static final String TAG = WiFiBT.class.getSimpleName();
@@ -132,7 +133,7 @@ public class WiFiBT extends WiFiPulic {
                     SelectionKey mKey = (SelectionKey) ite.next();
                     if (mKey.isAcceptable()) {          
                         SocketChannel ss = ((ServerSocketChannel)mKey.channel()).accept();
-                        es.execute(new ReadThread(ss));
+                        es.execute(new ReadThread(ss,contect));
                     }
                     ite.remove();
                 }
@@ -157,6 +158,7 @@ public class WiFiBT extends WiFiPulic {
 		                    
 		                    PeerMessage msgObj = new PeerMessage();
 		                    msgObj.setMessage("I am client");
+		                    msgObj.setType(Type.PEER);
 		                    WriteThread wt = new WriteThread(sc,msgObj);
 		                    es.execute(wt);
 		                    try {

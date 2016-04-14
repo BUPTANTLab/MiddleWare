@@ -1,6 +1,10 @@
 package com.ANT.MiddleWare.WiFi.WiFiBT;
 
 public class PeerMessage extends Message{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7004811480749043877L;
 	private String msg;
 	@Override
 	public String getMessage() {

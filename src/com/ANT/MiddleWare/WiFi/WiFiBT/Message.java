@@ -8,9 +8,23 @@ import java.io.Serializable;
 /**
  * Created by ge on 2016/4/12.
  */
-public abstract class Message implements Serializable {
-    private String fragment = "123123";
-    public enum Type {A,B};
+public  abstract class Message implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1331979125147452819L;
+    public static enum Type {PEER("peer message"),FRAGMENT("fragment message");
+    	private String describe;
+    	private Type(String describe) {
+			// TODO Auto-generated constructor stub
+    		this.describe = describe;
+		}
+    	@Override
+    	public String toString(){
+    	 return describe;
+    }
+    
+    };
     private Type type;
     public abstract String getMessage();
     public abstract void setMessage(String msg);
@@ -18,8 +32,9 @@ public abstract class Message implements Serializable {
     	return type;
     }
     public void setType(Type type){
-    	this.type = type;
+    	this. type = type;
     }
+    
     public void getBytes() {
         try {
             ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Message.txt"));
