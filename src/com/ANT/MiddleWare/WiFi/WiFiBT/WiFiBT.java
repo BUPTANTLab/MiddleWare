@@ -154,7 +154,10 @@ public class WiFiBT extends WiFiPulic {
 		            System.out.println("try to connect");
 		                if (sc.isConnected()) {
 		                    System.out.println("connection start");
-		                    WriteThread wt = new WriteThread(sc);
+		                    
+		                    PeerMessage msgObj = new PeerMessage();
+		                    msgObj.setMessage("I am client");
+		                    WriteThread wt = new WriteThread(sc,msgObj);
 		                    es.execute(wt);
 		                    try {
 		                        wt.join();

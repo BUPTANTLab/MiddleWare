@@ -138,7 +138,7 @@ public class MainFragment extends Fragment {
 							@Override
 							public void onClick(View v) {
 								// TODO Auto-generated method stub
-								WiFiBT.ask("192.168.1.89", Integer.parseInt(getString(R.string.bt_port)));
+								WiFiBT.ask("192.168.1.16", Integer.parseInt(getString(R.string.bt_port)));
 							}
 						});
 					} catch (InterruptedException e) {

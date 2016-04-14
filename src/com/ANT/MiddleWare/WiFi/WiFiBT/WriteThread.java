@@ -12,14 +12,15 @@ import java.nio.channels.SocketChannel;
  */
 public class WriteThread extends Thread {
     private SocketChannel sc;
-    public WriteThread(SocketChannel sc) {
+    private Message msgObj;
+    public WriteThread(SocketChannel sc,Message msgObj) {
         this.sc = sc;
+        this.msgObj = msgObj;
     }
     @Override
     public void run() {
         System.out.println("write start");
-        PeerMessage msgObj = new PeerMessage();
-        msgObj.setMessage("I am client");
+        
         byte[] bytesObj = null;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
