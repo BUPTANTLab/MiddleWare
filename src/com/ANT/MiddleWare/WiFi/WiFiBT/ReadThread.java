@@ -29,7 +29,6 @@ public class ReadThread extends Thread {
     	readFunc(sc);
     }
     private void readFunc(SocketChannel sc){
-        System.out.println("read start");
         ByteBuffer buf = ByteBuffer.allocate(1024);
         try {
             while (!Thread.interrupted()) {
@@ -37,12 +36,15 @@ public class ReadThread extends Thread {
                 if (byteRead >0) {
                     buf.flip();
                     byte[] content = new byte[buf.limit()];
+                    System.out.println(content.length);
                     buf.get(content);
                     ByteArrayInputStream byteArrayInputStream =
                             new ByteArrayInputStream(content);
                     ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-                    Message message = (Message) objectInputStream.readObject();
-                    handleMessage(message);
+                    Message[] message = (Message[]) objectInputStream.readObject();
+                    handleMessage(message[0]);
+//                    message = (Message) objectInputStream.readObject();
+//                    handleMessage(message);
                     response(sc);
                     objectInputStream.close();
                     byteArrayInputStream.close();

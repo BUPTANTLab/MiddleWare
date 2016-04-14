@@ -6,7 +6,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.*;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -159,7 +161,12 @@ public class WiFiBT extends WiFiPulic {
 		                    PeerMessage msgObj = new PeerMessage();
 		                    msgObj.setMessage("I am client");
 		                    msgObj.setType(Type.PEER);
-		                    WriteThread wt = new WriteThread(sc,msgObj);
+		                    PeerMessage msgObj2 = new PeerMessage();
+		                    msgObj.setType(Type.PEER);
+		                    List<Message> msgList = new ArrayList<Message>();
+		                    msgList.add(msgObj);
+		                    msgList.add(msgObj2);
+		                    WriteThread wt = new WriteThread(sc,msgList);
 		                    es.execute(wt);
 		                    try {
 		                        wt.join();
