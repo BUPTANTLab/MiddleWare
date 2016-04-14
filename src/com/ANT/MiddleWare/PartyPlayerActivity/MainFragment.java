@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -39,6 +40,7 @@ import android.widget.Toast;
 import com.ANT.MiddleWare.DASHProxyServer.DashProxyServer;
 import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
 import com.ANT.MiddleWare.WiFi.WiFiFactory;
+import com.ANT.MiddleWare.WiFi.WiFiBT.WiFiBT;
 import com.ANT.MiddleWare.WiFi.WiFiFactory.WiFiType;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -70,7 +72,7 @@ public class MainFragment extends Fragment {
 	private List<String> list = new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
 	private Spinner mySpinner;
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -130,6 +132,15 @@ public class MainFragment extends Fragment {
 				case 2: // bt
 					try {
 						WiFiFactory.changeInstance(getActivity(), WiFiType.BT);
+						btCaptain.setText("BT");
+						btCaptain.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								// TODO Auto-generated method stub
+								WiFiBT.ask("192.168.1.89", 12345);
+							}
+						});
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

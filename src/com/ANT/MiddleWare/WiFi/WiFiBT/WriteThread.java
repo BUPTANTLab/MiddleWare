@@ -18,9 +18,7 @@ public class WriteThread extends Thread {
     @Override
     public void run() {
         System.out.println("write start");
-        String message = "TCP new message 123456789";
         Message msgObj = new Message();
-        byte[] bytes = message.getBytes();
         byte[] bytesObj = null;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {

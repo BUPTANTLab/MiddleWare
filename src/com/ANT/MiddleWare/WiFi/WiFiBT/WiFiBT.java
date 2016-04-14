@@ -11,11 +11,19 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.ANT.MiddleWare.PartyPlayerActivity.MainFragment;
+import com.ANT.MiddleWare.PartyPlayerActivity.R;
+
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.ANT.MiddleWare.WiFi.WiFiPulic;
@@ -25,22 +33,28 @@ public class WiFiBT extends WiFiPulic {
 	private Context context=null;
 	private TelephonyManager tm;
 	private Process proc;
+	private String ip ;
 	private WifiManager wifi;
 	private static ExecutorService es = Executors.newCachedThreadPool();
+	private  ButtonInterface buttonListener = null;
+	public interface ButtonInterface{
+		public void onClick();
+	}
+	
 	public WiFiBT(Context contect) {
 		super(contect);
 		this.context = contect;
+//		View view = LayoutInflater.from(context).inflate(R.layout.fragment_main, null);
+//		Button button = (Button) view.findViewById(R.id.btCaptain);
+//		button.setText("B");
 		makeToast("I am BT");
 		tm = (TelephonyManager) contect
 				.getSystemService(Activity.TELEPHONY_SERVICE);
-
-		//pi.connect(po);
-		//po.connect(pi);
+		
 		String s = tm.getDeviceId();
 		int len = s.length();
 		int number = Integer.parseInt(s.substring(len - 2));
-		String ip = "192.168.1." + number;
-		makeToast(ip);
+		ip = "192.168.1." + number;
 		Log.v(TAG, "ip " + ip);
 		try {
 			proc = Runtime.getRuntime().exec("su");
@@ -48,10 +62,10 @@ public class WiFiBT extends WiFiPulic {
 			os.writeBytes("netcfg wlan0 up\n");
 			os.writeBytes("wpa_supplicant -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf -B\n");
 			os.writeBytes("ifconfig wlan0 " + ip + " netmask 255.255.255.0\n");
-//			os.writeBytes("ip route add 192.168.1.1/24 dev wlan0\n");
 			os.writeBytes("exit\n");
 			os.flush();
 			proc.waitFor();
+			
 			new Thread(new Runnable() {
 				
 				@Override
@@ -60,7 +74,9 @@ public class WiFiBT extends WiFiPulic {
 					listen();
 				}
 			}).start();
-			ask();
+			
+
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -98,9 +114,9 @@ public class WiFiBT extends WiFiPulic {
 	private void makeToast(String msg){
 		Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 	}
-    private static void listen() {
+    private  void listen() {
         try {
-            InetSocketAddress addr = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), 12345);
+            InetSocketAddress addr = new InetSocketAddress(InetAddress.getByName(ip), 12345);
             boolean condition = true;
             Selector selector = Selector.open();
             ServerSocketChannel ssc = ServerSocketChannel.open();
@@ -127,9 +143,43 @@ public class WiFiBT extends WiFiPulic {
             e.printStackTrace();
         }
     }
-    private static void ask( ){
-    	int remotePort = 12345;
+    public  static void ask(String ip,int port ){
+    	int remotePort = port;
+    	try {
+			InetAddress remoteAdr = InetAddress.getByName(ip);
+		      SocketChannel sc=null;
+		        try {
+		                sc = SocketChannel.open();
+		            sc.connect(new InetSocketAddress(remoteAdr, remotePort));
+		            System.out.println("try to connect");
+		                if (sc.isConnected()) {
+		                    System.out.println("connection start");
+		                    WriteThread wt = new WriteThread(sc);
+		                    es.execute(wt);
+		                    try {
+		                        wt.join();
+		                        System.out.println("ready to send");
+		                    } catch (InterruptedException e) {
+		                        e.printStackTrace();
+		                    }
+		                }
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		            System.out.println("connect fail");
+		        }finally {
+		            if (sc!=null&&(sc.isConnected())) {
+
+//		                    sc.close();
+		                    System.out.println("sc connected");
+
+		            }
+		            Thread.yield();
+		        }
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	
-    	InetSocketAddress addr = new InetSocketAddress("19", remotePort);
     }
+
 }
