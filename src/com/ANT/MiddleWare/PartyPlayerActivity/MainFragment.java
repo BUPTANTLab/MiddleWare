@@ -128,6 +128,15 @@ public class MainFragment extends Fragment {
 
 					break;
 				case 2: // bt
+					try {
+						WiFiFactory.changeInstance(getActivity(), WiFiType.BT);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					adhocSelect = false;
 					break;
 				case 3: // ncp2
