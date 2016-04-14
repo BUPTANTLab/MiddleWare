@@ -19,6 +19,9 @@ public class WriteThread extends Thread {
     }
     @Override
     public void run() {
+    	writeFunc(sc, msgObj);
+    }
+    private void writeFunc(SocketChannel sc,Message msgObj){
         System.out.println("write start");
         
         byte[] bytesObj = null;

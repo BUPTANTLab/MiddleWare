@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 import com.ANT.MiddleWare.PartyPlayerActivity.MainActivity;
+import com.ANT.MiddleWare.WiFi.WiFiBT.Message.Type;
 
 import android.content.Context;
 import android.widget.Toast;
@@ -25,6 +26,9 @@ public class ReadThread extends Thread {
 
     @Override
     public void run() {
+    	readFunc(sc);
+    }
+    private void readFunc(SocketChannel sc){
         System.out.println("read start");
         ByteBuffer buf = ByteBuffer.allocate(1024);
         try {
@@ -38,20 +42,10 @@ public class ReadThread extends Thread {
                             new ByteArrayInputStream(content);
                     ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
                     Message message = (Message) objectInputStream.readObject();
+                    handleMessage(message);
+                    response(sc);
                     objectInputStream.close();
                     byteArrayInputStream.close();
-                    result = "收到message:"+message.getMessage()+" type:"+message.getType().toString();
-                    System.out.println(result);
-                    MainActivity activity = (MainActivity) context;
-                    activity.runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							// TODO Auto-generated method stub
-							Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
-						}
-					});
-//                    Toast.makeText(context, message.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         } catch (IOException e) {
@@ -60,5 +54,24 @@ public class ReadThread extends Thread {
             e.printStackTrace();
         }
     }
-
+    private void response(SocketChannel sc){
+    	PeerMessage msg = new PeerMessage();
+    	msg.setMessage("hello I am client 2");
+    	msg.setType(Type.PEER);
+    	
+    	
+    }
+    private void handleMessage(Message message){
+    	result = "收到message:"+message.getMessage()+" type:"+message.getType().toString();
+        System.out.println(result);
+        MainActivity activity = (MainActivity) context;
+        activity.runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+			}
+		});
+    }
 }
