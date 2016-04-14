@@ -13,7 +13,8 @@ public  abstract class Message implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1331979125147452819L;
-    public static enum Type {PEER("peer message"),FRAGMENT("fragment message");
+    public static enum Type {PEER("peer message"),FRAGMENT("fragment message")
+    	,NONE("not set yet");
     	private String describe;
     	private Type(String describe) {
 			// TODO Auto-generated constructor stub
@@ -25,7 +26,7 @@ public  abstract class Message implements Serializable {
     }
     
     };
-    private Type type;
+    private Type type = Type.NONE;
     public abstract String getMessage();
     public abstract void setMessage(String msg);
     public Type getType(){

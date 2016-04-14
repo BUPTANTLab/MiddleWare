@@ -157,12 +157,13 @@ public class WiFiBT extends WiFiPulic {
 		            System.out.println("try to connect");
 		                if (sc.isConnected()) {
 		                    System.out.println("connection start");
-		                    
+		                    //输入消息添加到list
 		                    PeerMessage msgObj = new PeerMessage();
 		                    msgObj.setMessage("I am client");
 		                    msgObj.setType(Type.PEER);
 		                    PeerMessage msgObj2 = new PeerMessage();
-		                    msgObj.setType(Type.PEER);
+		                    msgObj2.setMessage("client 2");
+		                    msgObj2.setType(Type.PEER);
 		                    List<Message> msgList = new ArrayList<Message>();
 		                    msgList.add(msgObj);
 		                    msgList.add(msgObj2);

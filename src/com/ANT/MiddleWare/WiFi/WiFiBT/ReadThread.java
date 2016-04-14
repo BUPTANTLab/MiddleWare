@@ -42,9 +42,8 @@ public class ReadThread extends Thread {
                             new ByteArrayInputStream(content);
                     ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
                     Message[] message = (Message[]) objectInputStream.readObject();
-                    handleMessage(message[0]);
-//                    message = (Message) objectInputStream.readObject();
-//                    handleMessage(message);
+                    System.out.println("receive size :"+String.valueOf(message.length));
+                    handleMessage(message[1]);
                     response(sc);
                     objectInputStream.close();
                     byteArrayInputStream.close();
