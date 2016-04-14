@@ -26,35 +26,13 @@ public class ReadThread extends Thread {
 
     @Override
     public void run() {
-    	readFunc(sc);
+    	Message[]message =PublicMethod.readFunc(sc);
+    	System.out.println("receive size :"+String.valueOf(message.length));
+        handleMessage(message[1]);
+        response(sc);
+
     }
-    private void readFunc(SocketChannel sc){
-        ByteBuffer buf = ByteBuffer.allocate(1024);
-        try {
-            while (!Thread.interrupted()) {
-                int byteRead = sc.read(buf);
-                if (byteRead >0) {
-                    buf.flip();
-                    byte[] content = new byte[buf.limit()];
-                    System.out.println(content.length);
-                    buf.get(content);
-                    ByteArrayInputStream byteArrayInputStream =
-                            new ByteArrayInputStream(content);
-                    ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-                    Message[] message = (Message[]) objectInputStream.readObject();
-                    System.out.println("receive size :"+String.valueOf(message.length));
-                    handleMessage(message[1]);
-                    response(sc);
-                    objectInputStream.close();
-                    byteArrayInputStream.close();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+    
     private void response(SocketChannel sc){
     	PeerMessage msg = new PeerMessage();
     	msg.setMessage("hello I am client 2");

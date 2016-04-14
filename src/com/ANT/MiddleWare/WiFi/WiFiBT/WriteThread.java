@@ -23,46 +23,8 @@ public class WriteThread extends Thread {
 	@Override
     public void run() {
  
-        	writeFunc(sc, msgList);
+        	PublicMethod.writeFunc(sc, msgList);
     	
     }
-    private void writeFunc(SocketChannel sc, List<Message> msgList){
-        System.out.println("write start");
-        System.out.println("list size:"+String.valueOf(msgList.size()));
-        byte[] bytesObj = null;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = null;
-        try {
-            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-     
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        	try {
-        		System.out.println("write one");
-        		int size = msgList.size();
-        		Message[] msgArr = new Message[size];
-        		for(int i =0;i<size;i++){
-        			msgArr[i]=msgList.get(i);
-        		}
-				objectOutputStream.writeObject(msgArr);
-	        	bytesObj = byteArrayOutputStream.toByteArray();
-	            ByteBuffer buf = ByteBuffer.allocate(bytesObj.length);
-	            buf.put(bytesObj);
-	            buf.flip();
-	            while (buf.hasRemaining()) {
-	                try {
-	                    sc.write(buf);
-	                } catch (IOException e) {
-	                    e.printStackTrace();
-	                }
-	            }
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-    
-        System.out.println("write finish");
-    }
 }
