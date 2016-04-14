@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import com.ANT.MiddleWare.PartyPlayerActivity.MainActivity;
+
 import android.content.Context;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ import android.widget.Toast;
 public class ReadThread extends Thread {
     private SocketChannel sc;
     private Context context;
+	private String result;
     public ReadThread(SocketChannel sc,Context context) {
         this.sc = sc;
         this.context = context;
@@ -37,7 +40,17 @@ public class ReadThread extends Thread {
                     Message message = (Message) objectInputStream.readObject();
                     objectInputStream.close();
                     byteArrayInputStream.close();
-                    System.out.println("收到message:"+message.getMessage()+" type:"+message.getType().toString());
+                    result = "收到message:"+message.getMessage()+" type:"+message.getType().toString();
+                    System.out.println(result);
+                    MainActivity activity = (MainActivity) context;
+                    activity.runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+						}
+					});
 //                    Toast.makeText(context, message.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
