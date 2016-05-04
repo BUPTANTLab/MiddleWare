@@ -249,7 +249,7 @@ public class MainFragment extends Fragment {
 			}
 		});
 
-		configureData.setUrl("http://127.0.0.1:9999/4/s-1.mp4");
+		configureData.setUrl("http://127.0.0.1:9999/4/index.m3u8");
 
 		// etUrl.addTextChangedListener(new TextWatcher() {
 		//
