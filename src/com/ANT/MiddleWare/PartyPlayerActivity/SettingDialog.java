@@ -56,10 +56,10 @@ public class SettingDialog extends DialogFragment {
 			rbButton = (RadioButton) v.findViewById(R.id.G_mode);
 			rbButton.setChecked(true);
 			break;
-		case COOPERATIVE_MODE:
-			rbButton = (RadioButton) v.findViewById(R.id.cooperative_mode);
-			rbButton.setChecked(true);
-			break;
+//		case COOPERATIVE_MODE:
+//			rbButton = (RadioButton) v.findViewById(R.id.cooperative_mode);
+//			rbButton.setChecked(true);
+//			break;
 		default:
 			break;
 		}
@@ -79,10 +79,6 @@ public class SettingDialog extends DialogFragment {
 				case R.id.G_mode:
 					MainFragment.configureData
 							.setWorkingMode(ConfigureData.WorkMode.G_MDOE);
-					break;
-				case R.id.cooperative_mode:
-					MainFragment.configureData
-							.setWorkingMode(ConfigureData.WorkMode.COOPERATIVE_MODE);
 					break;
 				}
 			}

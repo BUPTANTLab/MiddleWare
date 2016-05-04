@@ -27,13 +27,7 @@
     	    android:text="@string/Gmode">
     	</RadioButton>  
     	
-    	<RadioButton 
-    	    android:layout_width="wrap_content" 
-    	    android:layout_height="wrap_content" 
-    	    android:id="@+id/cooperative_mode"  
-    	    android:text="@string/cooperativemode">
-    	</RadioButton>
-    	
+
     </RadioGroup>
     
     <Button 
