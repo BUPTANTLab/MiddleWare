@@ -58,6 +58,7 @@ public class WiFiBroad extends WiFiPulic {
 		Log.v(TAG, "ip " + myIP);
 		proc = Runtime.getRuntime().exec("su");
 		DataOutputStream os = new DataOutputStream(proc.getOutputStream());
+		os.writeBytes("dmesg > /data/misc/wifi/2dmesg.txt\n");
 		os.writeBytes("echo $PATH >/data/misc/wifi/path.txt\n");
 		os.writeBytes("cd sbin\n");
 		os.writeBytes("pwd >>/data/misc/wifi/pwd.txt\n");
@@ -74,10 +75,13 @@ public class WiFiBroad extends WiFiPulic {
 		os.writeBytes("cd ../xbin\n");
 		os.writeBytes("pwd >>/data/misc/wifi/pwd.txt\n");
 		os.writeBytes("ls -al >/data/misc/wifi/systemxbin.txt\n");
-		os.writeBytes("netcfg wlan0 up\n");
+		//os.writeBytes("ifconfig wlan0 up\n");
+		//os.writeBytes("ifconfig wlan0 down\n");
+		os.writeBytes("ifconfig wlan0 up\n");
 		os.writeBytes("wpa_supplicant -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf -B\n");
 		os.writeBytes("ifconfig wlan0 " + myIP + " netmask 255.255.255.0\n");
 		os.writeBytes("ip route add 224.0.0.0/4 dev wlan0\n");
+		os.writeBytes("dmesg >/data/misc/wifi/2dmesgaft.txt\n");
 		os.writeBytes("exit\n");
 		os.flush();
 		proc.waitFor();
