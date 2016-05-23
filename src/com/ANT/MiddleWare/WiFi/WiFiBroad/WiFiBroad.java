@@ -101,7 +101,7 @@ public class WiFiBroad extends WiFiPulic {
 		recvThd = new RecvMulti(po, contect, socket);
 		recvThd.start();
 
-		sendThd = new SendMulti(socket, taskList);
+		sendThd = new SendMulti(socket, taskList, convertStack);
 		sendThd.start();
 
 		objThd = new ObjectMulti(pi, contect, sendThd);

@@ -1,19 +1,26 @@
 package com.ANT.MiddleWare.DASHProxyServer;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Stack;
 
+import android.R.integer;
 import android.os.Environment;
 import android.util.Log;
 
 import com.ANT.MiddleWare.Entities.FileFragment;
+import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
 import com.ANT.MiddleWare.Integrity.IntegrityCheck;
 import com.ANT.MiddleWare.PartyPlayerActivity.ConfigureData.WorkMode;
 import com.ANT.MiddleWare.PartyPlayerActivity.MainFragment;
 import com.ANT.MiddleWare.PartyPlayerActivity.test.CellularDownTest;
+import com.ANT.MiddleWare.WiFi.WiFiFactory;
+import com.ANT.MiddleWare.WiFi.WiFiFactory.WiFiType;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -36,11 +43,46 @@ public class DashProxyServer extends NanoHTTPD {
 			return localFile("index.m3u8");
 		}
 		String playist = getFileName(session, ".mp4");
+		
 		Log.v(TAG, "playist " + playist);
 		if (!playist.equals("")) {
 			Log.v(TAG, "mp4");
 			switch (MainFragment.configureData.getWorkingMode()) {
 			case LOCAL_MODE:
+				String dir=Environment.getExternalStorageDirectory().getAbsolutePath()+"/video/4/";
+//				for(int i=1;i<6;i++){
+				    String i=playist.substring(0, 1);
+				    Log.v("i", i);
+					File file=new File(dir, i+".mp4");
+					int len=(int) file.length();
+					try {
+						BufferedInputStream in = null;
+						in = new BufferedInputStream(new FileInputStream(file));
+						ByteArrayOutputStream out = new ByteArrayOutputStream(1024);        
+					     
+		                byte[] temp = new byte[1024];        
+		                int size = 0;        
+		                while ((size = in.read(temp)) != -1) {        
+		                        out.write(temp, 0, size);        
+		                }    
+		                Log.d("readLocalFile", "len:"+len);
+		                byte[] content = out.toByteArray();  
+		                FileFragment f =new FileFragment(0,len,Integer.parseInt(i),len);
+		                f.setData(content);
+		                WiFiFactory.insertF(f);
+		                in.close(); 
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (FileFragmentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
+				
+//				}
 				return localFile(playist);
 			case G_MDOE:
 				IntegrityCheck iTC = IntegrityCheck.getInstance();
