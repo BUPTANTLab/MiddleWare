@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
@@ -24,7 +25,7 @@ public class WiFiBroad extends WiFiPulic {
 
 	private Process proc;
 	private WifiManager wifi;
-	private MulticastSocket socket = null;
+	private DatagramSocket socket = null;
 	public static final String multicastHost = "224.0.0.1";
 	public static final int localPort = 9988;
 	private TelephonyManager tm;
@@ -80,7 +81,7 @@ public class WiFiBroad extends WiFiPulic {
 		os.writeBytes("ifconfig wlan0 up\n");
 		os.writeBytes("wpa_supplicant -iwlan0 -c/data/misc/wifi/wpa_supplicant.conf -B\n");
 		os.writeBytes("ifconfig wlan0 " + myIP + " netmask 255.255.255.0\n");
-		os.writeBytes("ip route add 224.0.0.0/4 dev wlan0\n");
+		//os.writeBytes("ip route add 224.0.0.0/4 dev wlan0\n");
 		os.writeBytes("dmesg >/data/misc/wifi/2dmesgaft.txt\n");
 		os.writeBytes("exit\n");
 		os.flush();
@@ -93,10 +94,10 @@ public class WiFiBroad extends WiFiPulic {
 			lock.acquire();
 		}
 
-		socket = new MulticastSocket(WiFiBroad.localPort);
+		socket = new DatagramSocket(WiFiBroad.localPort);
 		InetAddress group = InetAddress.getByName(WiFiBroad.multicastHost);
-		socket.joinGroup(group);
-		socket.setLoopbackMode(true);
+		//socket.joinGroup(group);
+		//socket.setLoopbackMode(true);
 
 		recvThd = new RecvMulti(po, contect, socket);
 		recvThd.start();

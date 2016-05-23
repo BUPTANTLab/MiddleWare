@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,23 +13,21 @@ import java.util.HashSet;
 import java.util.Stack;
 
 import android.os.Environment;
-import android.provider.MediaStore.Files;
 import android.util.Log;
 
 import com.ANT.MiddleWare.Entities.FileFragment;
-import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
 import com.ANT.MiddleWare.PartyPlayerActivity.MainFragment;
 import com.ANT.MiddleWare.WiFi.WiFiFactory;
 
 public class SendMulti extends Thread {
 	private static final String TAG = SendMulti.class.getSimpleName();
 
-	private MulticastSocket socket;
+	private DatagramSocket socket;
 	private Stack<FileFragment> taskList;
 	private Stack<FileFragment> convertStack= new Stack<FileFragment>();
 	public HashSet<Integer> repeat = new HashSet<Integer>();
 
-	public SendMulti(MulticastSocket mSocket, Stack<FileFragment> mTaskList,Stack<FileFragment> mConvertStack) {
+	public SendMulti(DatagramSocket mSocket, Stack<FileFragment> mTaskList,Stack<FileFragment> mConvertStack) {
 		this.socket = mSocket;
 		this.taskList = mTaskList;
 		this.convertStack=mConvertStack;
@@ -96,7 +94,8 @@ public class SendMulti extends Thread {
 			fos.close();
 			
 			DatagramPacket dp = new DatagramPacket(data, data.length,
-					InetAddress.getByName(WiFiBroad.multicastHost),
+					//InetAddress.getByName(WiFiBroad.multicastHost),
+					InetAddress.getByName("192.168.1.111"),
 					WiFiBroad.localPort);
 			Log.d(TAG, "send "+startOffset+" "+stopOffset+" "+flen+" "+segId+" "+System.currentTimeMillis());
 			socket.send(dp);

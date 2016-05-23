@@ -3,7 +3,7 @@ package com.ANT.MiddleWare.WiFi.WiFiBroad;
 import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.net.DatagramPacket;
-import java.net.MulticastSocket;
+import java.net.DatagramSocket;
 import java.net.SocketException;
 
 import android.app.Activity;
@@ -15,11 +15,11 @@ public class RecvMulti extends Thread {
 	private static final String TAG = RecvMulti.class.getSimpleName();
 
 	private Context activity;
-	private MulticastSocket socket;
+	private DatagramSocket socket;
 	private PipedOutputStream po;
 
 	public RecvMulti(PipedOutputStream po, Context activity,
-			MulticastSocket socket) {
+			DatagramSocket socket) {
 		this.activity = activity;
 		this.socket = socket;
 		this.po = po;
