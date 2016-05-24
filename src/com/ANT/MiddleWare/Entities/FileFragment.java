@@ -42,69 +42,37 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 	}
 
 	public byte[] getData() {
-		synchronized (this) {
+		if (data != null)
 			return data.clone();
-		}
+		return null;
+	}
+
+	public int getSegData(int start) {
+		if (start < startIndex || start >= stopIndex)
+			return 0;
+		int len = Math.min(stopIndex - start, LIMIT_LEN);
+		return len;
 	}
 
 	public byte[] getData(int start) {
-		if (start < startIndex || start >= stopIndex)
+		if (start < startIndex || start >= stopIndex || !written)
 			return null;
 		int len = Math.min(stopIndex - start, LIMIT_LEN);
 		byte[] buf = new byte[len];
-		synchronized (this) {
-			System.arraycopy(this.data, start - startIndex, buf, 0, buf.length);
-		}
+		System.arraycopy(this.data, start - startIndex, buf, 0, buf.length);
 		return buf;
-	}
-
-	public void setData(byte[] d, int offset) throws FileFragmentException {
-		synchronized (this) {
-			if (data == null) {
-				throw new FileFragmentException("Fragment Data Null " + offset
-						+ " " + d.length);
-			}
-			Log.d(TAG, "" + startIndex + " " + stopIndex + " " + data.length
-					+ " " + offset + " " + d.length);
-			if (stopIndex - offset != 0)
-				Log.w(TAG, "Waste " + (stopIndex - offset));
-			offset = offset - this.startIndex;
-			int len = offset + d.length;
-			byte[] tmpdata = null;
-			if (TRY_LESS_GC) {
-				ByteArrayOutputStream bo = new ByteArrayOutputStream(len);
-				bo.write(data, 0, data.length);
-				bo.write(d, data.length - offset, len - data.length);
-				tmpdata = bo.toByteArray();
-			} else {
-				tmpdata = new byte[len];
-				System.arraycopy(data, 0, tmpdata, 0, data.length);
-				System.arraycopy(d, data.length - offset, tmpdata, data.length,
-						len - data.length);
-			}
-			this.data = tmpdata;
-			this.stopIndex = this.startIndex + tmpdata.length;
-			this.written = true;
-			System.gc();
-		}
 	}
 
 	public void setData(byte[] d) throws FileFragmentException {
 		if (data == null) {
-			synchronized (this) {
-				if (data == null) {
-					int fragLength = stopIndex - startIndex;
-					this.data = new byte[fragLength];
-				}
-			}
+			int fragLength = stopIndex - startIndex;
+			this.data = new byte[fragLength];
 		}
 		if (data.length != d.length)
 			throw new FileFragmentException("Fragment Length Wrong "
 					+ data.length + " " + d.length);
-		synchronized (this) {
-			System.arraycopy(d, 0, this.data, 0, d.length);
-			this.written = true;
-		}
+		System.arraycopy(d, 0, this.data, 0, d.length);
+		this.written = true;
 	}
 
 	public boolean isWritten() {
@@ -156,9 +124,7 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 	public FileFragment clone() {
 		FileFragment o = null;
 		try {
-			synchronized (this) {
-				o = (FileFragment) super.clone();
-			}
+			o = (FileFragment) super.clone();
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
@@ -206,9 +172,7 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 		ObjectOutput out = null;
 		try {
 			out = new ObjectOutputStream(bos);
-			synchronized (this) {
-				out.writeObject(this);
-			}
+			out.writeObject(this);
 			byte[] b = bos.toByteArray();
 			return b;
 		} catch (IOException e) {
@@ -250,11 +214,9 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 	}
 
 	public boolean isTooBig() {
-		synchronized (this) {
-			if (!written)
-				return false;
-			return data.length > LIMIT_LEN;
-		}
+		if (!written)
+			return false;
+		return data.length > LIMIT_LEN;
 	}
 
 	public class FileFragmentException extends Exception {
@@ -264,5 +226,10 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 		public FileFragmentException(String string) {
 			super(string);
 		}
+	}
+
+	public void realeaseData() {
+		data = null;
+		written = false;
 	}
 }

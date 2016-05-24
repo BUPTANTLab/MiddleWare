@@ -17,26 +17,43 @@ public class Segment {
 	private boolean Intergrity = false;
 	private static Random random = new Random();
 	private int percent = 0;
+	private byte[] data = null;
 
 	public synchronized void setSegLength(int segLength) {
 		if (this.segLength == -1) {
 			this.segLength = segLength;
+			this.data = new byte[segLength];
 		}
 	}
 
 	public Segment(int id, int length) {
 		this.segmentID = id;
 		this.segLength = length;
+		this.data = new byte[segLength];
 		segmentList = new ArrayList<FileFragment>();
+	}
+
+	private boolean realeaseFragement(FileFragment fm) {
+		if (data == null)
+			return false;
+		if (!fm.isWritten())
+			return true;
+		System.arraycopy(fm.getData(), 0, data, fm.getStartIndex(),
+				fm.getFragLength());
+		fm.realeaseData();
+		return true;
 	}
 
 	public boolean insert(FileFragment fm) {
 		synchronized (this) {
 			if (fm.isWritten() && fm.getSegmentID() == segmentID && !Intergrity) {
 				percent += fm.getFragLength();
+				setSegLength(fm.getSegmentLen());
+				boolean res = realeaseFragement(fm);
+				if (!res)
+					return false;
 				segmentList.add(fm.clone());
 				Collections.sort(segmentList);
-				setSegLength(fm.getSegmentLen());
 				return true;
 			}
 			return false;
@@ -68,7 +85,7 @@ public class Segment {
 			} else if (prev.getStartIndex() < next.getStartIndex()) {
 				if (prev.getStopIndex() < next.getStopIndex()) {
 					percent -= prev.getFragLength();
-					prev.setData(next.getData(), next.getStartIndex());
+					// prev.setData(next.getData(), next.getStartIndex());
 					percent += prev.getFragLength();
 					Log.d(TAG, "" + segLength + " " + prev.getStopIndex());
 				}
@@ -110,13 +127,14 @@ public class Segment {
 	}
 
 	public byte[] getData() {
-		synchronized (this) {
-			if (segmentList == null || segmentList.size() == 0)
-				return null;
-			checkIntegrity();
-			return segmentList.get(0).getData();
-		}
-
+		if (segmentList == null || segmentList.size() == 0)
+			return null;
+		checkIntegrity();
+		int len = segmentList.get(0).getFragLength();
+		int s = segmentList.get(0).getStartIndex();
+		byte[] d = new byte[len];
+		System.arraycopy(this.data, s, d, 0, len);
+		return d;
 	}
 
 	public byte[] getData(int start) {
@@ -125,15 +143,18 @@ public class Segment {
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
+		if (segmentList == null || segmentList.size() == 0) {
+			return null;
+		}
+		checkIntegrity();
 		synchronized (this) {
-			if (segmentList == null || segmentList.size() == 0) {
-				return null;
-			}
-			checkIntegrity();
 			for (FileFragment f : segmentList) {
-				byte[] tmp = f.getData(start);
-				if (tmp != null)
-					return tmp;
+				int len = f.getSegData(start);
+				if (len <= 0)
+					continue;
+				byte[] buf = new byte[len];
+				System.arraycopy(this.data, start, buf, 0, buf.length);
+				return buf;
 			}
 			return null;
 		}
@@ -143,7 +164,8 @@ public class Segment {
 		byte[] data = getData(start);
 		if (data == null)
 			return null;
-		FileFragment f = new FileFragment(start, start + data.length, segmentID,segLength);
+		FileFragment f = new FileFragment(start, start + data.length,
+				segmentID, segLength);
 		f.setData(data);
 		return f;
 	}
@@ -154,19 +176,20 @@ public class Segment {
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
+		if (segmentList == null) {
+			return 0;
+		}
+		int size = segmentList.size();
+		if (size == 0) {
+			return 0;
+		}
+		if (checkIntegrity())
+			throw new SegmentException("No Fragment Miss");
+		if (size == 1) {
+			return segmentList.get(0).getStopIndex();
+		}
 		synchronized (this) {
-			if (segmentList == null) {
-				return 0;
-			}
-			int size = segmentList.size();
-			if (size == 0) {
-				return 0;
-			}
-			if (checkIntegrity())
-				throw new SegmentException("No Fragment Miss");
-			if (size == 1) {
-				return segmentList.get(0).getStopIndex();
-			}
+			size = segmentList.size();
 			return segmentList.get(random.nextInt(size - 1)).getStopIndex();
 		}
 	}
