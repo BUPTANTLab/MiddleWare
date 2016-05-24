@@ -14,7 +14,6 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 	private static final long serialVersionUID = -7869356592846635319L;
 
 	private static final String TAG = FileFragment.class.getSimpleName();
-	private static boolean TRY_LESS_GC = false;// Almost Same??
 	public static int LIMIT_LEN = 16 * 1024;
 
 	private int startIndex;
@@ -23,6 +22,8 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 	private int segmentLen;
 	private byte[] data = null;
 	private boolean written = false;
+
+	private int fragLength;
 
 	public FileFragment(int start, int stop, int segID, int seglen) {
 		this.startIndex = start;
@@ -36,7 +37,7 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 		this.stopIndex = fm.getStopIndex();
 		this.segmentID = fm.getSegmentID();
 		this.segmentLen = fm.getSegmentLen();
-		int fragLength = fm.getFragLength();
+		fragLength = fm.getFragLength();
 		this.data = new byte[fragLength];
 		this.setData(fm.getData());
 	}
@@ -63,9 +64,19 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 		return buf;
 	}
 
+	public void setData(int d, int offset) throws FileFragmentException {
+		Log.d(TAG, "" + startIndex + " " + stopIndex + " " + fragLength + " "
+				+ offset + " " + d);
+		if (stopIndex - offset != 0)
+			Log.w(TAG, "Waste " + (stopIndex - offset));
+		offset = offset - this.startIndex;
+		fragLength = offset + d;
+		this.stopIndex = this.startIndex + fragLength;
+	}
+
 	public void setData(byte[] d) throws FileFragmentException {
 		if (data == null) {
-			int fragLength = stopIndex - startIndex;
+			fragLength = stopIndex - startIndex;
 			this.data = new byte[fragLength];
 		}
 		if (data.length != d.length)
@@ -80,7 +91,7 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 	}
 
 	public int getFragLength() {
-		return data.length;
+		return fragLength;
 	}
 
 	public int getStartIndex() {
@@ -100,7 +111,7 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 	}
 
 	public void check() throws FileFragmentException {
-		if ((stopIndex - startIndex != data.length) || segmentID < 1
+		if ((stopIndex - startIndex != fragLength) || segmentID < 1
 				|| written == false)
 			throw new FileFragmentException("Fragment Check Fail!");
 	}
@@ -116,7 +127,7 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 		if (data == null) {
 			return "Frag " + startIndex + " " + stopIndex + " 0";
 		} else {
-			return "Frag " + startIndex + " " + stopIndex + " " + data.length;
+			return "Frag " + startIndex + " " + stopIndex + " " + fragLength;
 		}
 	}
 
@@ -216,7 +227,7 @@ public class FileFragment implements Comparable<FileFragment>, Serializable,
 	public boolean isTooBig() {
 		if (!written)
 			return false;
-		return data.length > LIMIT_LEN;
+		return fragLength > LIMIT_LEN;
 	}
 
 	public class FileFragmentException extends Exception {

@@ -29,7 +29,8 @@ public class Segment {
 	public Segment(int id, int length) {
 		this.segmentID = id;
 		this.segLength = length;
-		this.data = new byte[segLength];
+		if (this.segLength != -1) {
+		this.data = new byte[segLength];}
 		segmentList = new ArrayList<FileFragment>();
 	}
 
@@ -85,7 +86,7 @@ public class Segment {
 			} else if (prev.getStartIndex() < next.getStartIndex()) {
 				if (prev.getStopIndex() < next.getStopIndex()) {
 					percent -= prev.getFragLength();
-					// prev.setData(next.getData(), next.getStartIndex());
+					prev.setData(next.getFragLength(), next.getStartIndex());
 					percent += prev.getFragLength();
 					Log.d(TAG, "" + segLength + " " + prev.getStopIndex());
 				}
