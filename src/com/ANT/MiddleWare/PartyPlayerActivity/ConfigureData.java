@@ -20,11 +20,20 @@ public class ConfigureData {
 	private CellType DefMore = CellType.NOCELL;
 	private CellType DefCell = CellType.NOCELL;
 	private boolean noWiFiSend = true;
+	private int filenum=-1;
 
 	public ConfigureData(String url) {
 		this.url = url;
 		serviceAlive = false;
 		workingMode = WorkMode.LOCAL_MODE;
+	}
+	
+	public int getFileNum(){
+		return filenum;
+	}
+	
+	public void setFileNum(int i){
+		this.filenum=i;
 	}
 
 	public WorkMode getWorkingMode() {

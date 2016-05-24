@@ -1,11 +1,14 @@
 package com.ANT.MiddleWare.PartyPlayerActivity;
 
+
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Stack;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -19,6 +22,7 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
@@ -67,10 +71,13 @@ public class MainFragment extends Fragment {
 
 	private Handler myHandler;
 	private boolean adhocSelect = false;
+	
+	private boolean ncp2Select =false;
 
 	private List<String> list = new ArrayList<String>();
 	private ArrayAdapter<String> adapter;
 	private Spinner mySpinner;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -118,9 +125,20 @@ public class MainFragment extends Fragment {
 					break;
 				case 1: // adhoc
 					adhocSelect = true;
+					Toast.makeText(getActivity(), "time:"+System.currentTimeMillis(),
+							Toast.LENGTH_SHORT).show();
 					try {
 						WiFiFactory.changeInstance(getActivity(),
 								WiFiType.BROAD);
+						String dir=Environment.getExternalStorageDirectory()+"/lbroadtest/";
+						File filedir=new File(dir);
+						filedir.mkdir();
+						int num=0;
+						if(filedir.isDirectory()){
+							String[] s =filedir.list();
+							num=s.length;
+						}
+						MainFragment.configureData.setFileNum(num);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -133,6 +151,16 @@ public class MainFragment extends Fragment {
 					break;
 				case 3: // ncp2
 					adhocSelect = false;
+					ncp2Select = true;
+					try {
+						WiFiFactory.changeInstance(getActivity(), WiFiType.NCP2);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					break;
 				case 4: // tcp
 					adhocSelect = false;
@@ -249,7 +277,7 @@ public class MainFragment extends Fragment {
 			}
 		});
 
-		configureData.setUrl("http://127.0.0.1:9999/4/index.m3u8");
+		configureData.setUrl("http://127.0.0.1:9999/4/s-1.mp4");
 
 		// etUrl.addTextChangedListener(new TextWatcher() {
 		//
@@ -407,7 +435,7 @@ public class MainFragment extends Fragment {
 					.setAutoCancel(true).build();
 		}
 		NotificationManager notificationManager = (NotificationManager) getActivity()
-				.getSystemService(Activity.NOTIFICATION_SERVICE);
+				.getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.notify(0, notification);
 
 	}
