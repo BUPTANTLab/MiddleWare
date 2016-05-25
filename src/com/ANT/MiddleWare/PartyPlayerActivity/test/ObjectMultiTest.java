@@ -65,7 +65,7 @@ public class ObjectMultiTest extends AndroidTestCase {
 			final PipedInputStream pi = new PipedInputStream(po);
 
 			ObjectMulti objThd = new ObjectMulti(pi, getContext(),
-					new SendMulti(null, null, null));
+					new SendMulti(null, null));
 			objThd.start();
 			for (FileFragment f : fraList) {
 				po.write(f.toBytes());

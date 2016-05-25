@@ -136,8 +136,9 @@ public class SendMulti extends Thread {
 				ff = taskList.pop();
 				Log.d("localsend",ff.toString()+" "+ff.getSegmentID()+" "+System.currentTimeMillis());
 			}
-			if (ff == null)
+			if (ff == null) {
 				continue;
+			}
 			if (ff.isTooBig()) {
 				Log.d("sendtoobig", ff.toString()+" "+ff.getSegmentID());
 				WiFiFactory.insertF(ff);

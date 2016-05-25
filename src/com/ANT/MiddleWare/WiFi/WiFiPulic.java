@@ -2,7 +2,6 @@ package com.ANT.MiddleWare.WiFi;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Stack;
 
 import android.content.Context;
 

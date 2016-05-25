@@ -112,10 +112,10 @@ public class ObjectMulti extends Thread {
 						// TODO
 						// send IP
 						// RoundRobin.getInstance().sendIP(WiFiBroad.baseIP+ff.getStartIndex());
-						if(ff.getStartIndex()==51){
-							WiFiFactory.EmergencySend("I am Captain!"
-									.getBytes("UTF-8"));
-							Log.d("send2",String.valueOf(System.currentTimeMillis()));}
+//						if(ff.getStartIndex()==51){
+//							WiFiFactory.EmergencySend("I am Captain!"
+//									.getBytes("UTF-8"));
+//							Log.d("send2",String.valueOf(System.currentTimeMillis()));}
 						((Activity) activity).runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
