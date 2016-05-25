@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Stack;
 
 import android.os.Environment;
@@ -23,14 +24,14 @@ public class SendMulti extends Thread {
 	private static final String TAG = SendMulti.class.getSimpleName();
 
 	private MulticastSocket socket;
-	private Stack<FileFragment> taskList;
-	private Stack<FileFragment> convertStack= new Stack<FileFragment>();
+	private LinkedList<FileFragment> taskList;
+	//private Stack<FileFragment> convertStack= new Stack<FileFragment>();
 	public HashSet<Integer> repeat = new HashSet<Integer>();
 
-	public SendMulti(MulticastSocket mSocket, Stack<FileFragment> mTaskList,Stack<FileFragment> mConvertStack) {
+	public SendMulti(MulticastSocket mSocket, LinkedList<FileFragment> mTaskList) {
 		this.socket = mSocket;
 		this.taskList = mTaskList;
-		this.convertStack=mConvertStack;
+		//this.convertStack=mConvertStack;
 	}
 
 	public boolean isRepeat(FileFragment f) {
@@ -126,13 +127,13 @@ public class SendMulti extends Thread {
 //			}
 			
 			FileFragment ff = null;
-			synchronized (convertStack) {
+			synchronized (taskList) {
 				
-				if (convertStack.empty()) {
+				if (taskList.isEmpty()) {
 					//RoundRobin.getInstance().passToken();
 					continue;
 				}
-				ff = convertStack.pop();
+				ff = taskList.pop();
 				Log.d("localsend",ff.toString()+" "+ff.getSegmentID()+" "+System.currentTimeMillis());
 			}
 			if (ff == null)
@@ -144,8 +145,8 @@ public class SendMulti extends Thread {
 				boolean is = send(ff);
 				if (!is) {
 					Log.d("sendfail", ff.toString()+" "+ff.getSegmentID());
-					synchronized (convertStack) {
-						convertStack.add(ff);
+					synchronized (taskList) {
+						taskList.addFirst(ff);
 					}
 				}
 			}

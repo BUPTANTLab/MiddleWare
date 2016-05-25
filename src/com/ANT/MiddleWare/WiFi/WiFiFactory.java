@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.ANT.MiddleWare.Entities.FileFragment;
 import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
-import com.ANT.MiddleWare.PartyPlayerActivity.ConfigureData;
 import com.ANT.MiddleWare.PartyPlayerActivity.MainFragment;
 import com.ANT.MiddleWare.WiFi.WiFiBT.WiFiBT;
 import com.ANT.MiddleWare.WiFi.WiFiBroad.WiFiBroad;

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
@@ -102,7 +101,7 @@ public class WiFiBroad extends WiFiPulic {
 		recvThd = new RecvMulti(po, contect, socket);
 		recvThd.start();
 
-		sendThd = new SendMulti(socket, taskList, convertStack);
+		sendThd = new SendMulti(socket, taskList);
 		sendThd.start();
 
 		objThd = new ObjectMulti(pi, contect, sendThd);
