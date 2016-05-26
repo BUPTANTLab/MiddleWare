@@ -85,7 +85,7 @@ public class UdpSpeed {
 		int s = 0;
 		long time = System.currentTimeMillis();
 		for (int i = 0; i < d; i++) {
-			s = jni.send(b);
+			s = jni.send(b, b.length);
 			if (s > 0) {
 				sum += s;
 			}

@@ -43,10 +43,10 @@ JNIEXPORT void JNICALL Java_com_ANT_MiddleWare_jni_udpSend_init
 }
 
 JNIEXPORT jint JNICALL Java_com_ANT_MiddleWare_jni_udpSend_send(JNIEnv * env,
-jobject, jbyteArray strIn)
+jobject, jbyteArray strIn, jint l)
 {
 	char* data = (char*) env->GetByteArrayElements(strIn, 0);
-	int s = sendto(sockfd, data, strlen(data), 0, (struct sockaddr *) &server, len);
+	int s = sendto(sockfd, data, l, 0, (struct sockaddr *) &server, len);
 	if(s<=0){
 		LOGE("errno %d", errno);
 	}else{

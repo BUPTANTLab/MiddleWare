@@ -21,7 +21,7 @@ JNIEXPORT void JNICALL Java_com_ANT_MiddleWare_jni_udpSend_init
  * Signature: ([B)I
  */
 JNIEXPORT jint JNICALL Java_com_ANT_MiddleWare_jni_udpSend_send
-  (JNIEnv *, jobject, jbyteArray);
+  (JNIEnv *, jobject, jbyteArray, jint);
 
 #ifdef __cplusplus
 }
