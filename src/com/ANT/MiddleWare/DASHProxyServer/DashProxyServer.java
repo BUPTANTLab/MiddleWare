@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Stack;
 
-import android.R.integer;
 import android.os.Environment;
 import android.util.Log;
 
@@ -20,7 +19,6 @@ import com.ANT.MiddleWare.PartyPlayerActivity.ConfigureData.WorkMode;
 import com.ANT.MiddleWare.PartyPlayerActivity.MainFragment;
 import com.ANT.MiddleWare.PartyPlayerActivity.test.CellularDownTest;
 import com.ANT.MiddleWare.WiFi.WiFiFactory;
-import com.ANT.MiddleWare.WiFi.WiFiFactory.WiFiType;
 
 import fi.iki.elonen.NanoHTTPD;
 

@@ -182,7 +182,6 @@ public class MainFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (adhocSelect) {
 
 					try {
 						WiFiFactory.EmergencySend("I am Captain!"
@@ -204,7 +203,6 @@ public class MainFragment extends Fragment {
 									Toast.LENGTH_SHORT).show();
 						}
 					});
-				}
 
 			}
 		});
