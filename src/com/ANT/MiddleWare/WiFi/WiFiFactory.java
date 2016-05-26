@@ -20,8 +20,8 @@ public class WiFiFactory {
 		EMPTY, TCP_ALL, BROAD, NCP2, BT
 	}
 
-	private static WiFiPulic instance = new WiFiEmpty(null);
-	private static WiFiType ins_type = WiFiFactory.WiFiType.EMPTY;
+	private static WiFiPulic instance = new WiFiBT(null);
+	private static WiFiType ins_type = WiFiFactory.WiFiType.BT;
 
 	private WiFiFactory() {
 	}
