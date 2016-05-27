@@ -5,24 +5,24 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
-import com.ANT.MiddleWare.jni.udpSend;
-
 import android.util.Log;
+
+import com.ANT.MiddleWare.jni.udpSend;
 
 public class UdpSpeed {
 	private static final String TAG = UdpSpeed.class.getSimpleName();
-	private static final String host = "192.168.1.255";
 	private static final int port = 9999;
 	private static final int d = 100;
 	private static final int l = 65500;
 
-	public static void NormalUdp() {
+	public static void NormalUdp(String host) {
 		DatagramSocket dataSocket = null;
 		try {
 			dataSocket = new DatagramSocket(port);
@@ -36,7 +36,9 @@ public class UdpSpeed {
 				dataSocket.send(dataPacket);
 			}
 			time = System.currentTimeMillis() - time;
-			Log.e(TAG, "" + (d * l * 8000.0 / 1024 / time) + " kbps");
+			Log.e(TAG, host + " "
+					+ (d * sendDataByte.length * 8000.0 / 1024 / time)
+					+ " kbps");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (SocketException e) {
@@ -48,7 +50,39 @@ public class UdpSpeed {
 		}
 	}
 
-	public static void NioUdp() {
+	public static void MultiUdp(String host) {
+		MulticastSocket dataSocket = null;
+		try {
+			dataSocket = new MulticastSocket(port);
+			// InetAddress group =
+			// InetAddress.getByName(WiFiBroad.multicastHost);
+			// dataSocket.joinGroup(group);
+			dataSocket.setLoopbackMode(true);
+			byte[] sendDataByte = new byte[l];
+			DatagramPacket dataPacket;
+			dataPacket = new DatagramPacket(sendDataByte, sendDataByte.length,
+					InetAddress.getByName(host), port);
+			Log.e(TAG, "time start " + dataSocket.getSendBufferSize());
+			long time = System.currentTimeMillis();
+			for (int i = 0; i < d; i++) {
+				dataSocket.send(dataPacket);
+			}
+			time = System.currentTimeMillis() - time;
+			Log.e(TAG, host + " "
+					+ (d * sendDataByte.length * 8000.0 / 1024 / time)
+					+ " kbps");
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			dataSocket.close();
+		}
+	}
+
+	public static void NioUdp(String host) {
 		DatagramChannel dc = null;
 		try {
 			dc = DatagramChannel.open();
@@ -69,7 +103,7 @@ public class UdpSpeed {
 				sum += dc.send(bb, address);
 			}
 			time = System.currentTimeMillis() - time;
-			Log.e(TAG, "" + (sum * 8000.0 / 1024 / time) + " kbps");
+			Log.e(TAG, host + " " + (sum * 8000.0 / 1024 / time) + " kbps");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

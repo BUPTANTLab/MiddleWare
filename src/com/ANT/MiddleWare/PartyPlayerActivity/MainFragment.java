@@ -129,7 +129,7 @@ public class MainFragment extends Fragment {
 							Toast.LENGTH_SHORT).show();
 					try {
 						WiFiFactory.changeInstance(getActivity(),
-								WiFiType.EMPTY);
+								WiFiType.BROAD);
 						
 						String dir=Environment.getExternalStorageDirectory()+"/lbroadtest/";
 						File filedir=new File(dir);
