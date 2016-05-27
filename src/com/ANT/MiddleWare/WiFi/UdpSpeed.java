@@ -14,6 +14,8 @@ import java.nio.channels.DatagramChannel;
 
 import android.util.Log;
 
+import com.ANT.MiddleWare.Entities.FileFragment;
+import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
 import com.ANT.MiddleWare.jni.udpSend;
 
 public class UdpSpeed {
@@ -109,10 +111,10 @@ public class UdpSpeed {
 		}
 	}
 
-	public static void JniUdp() {
+	public static void JniUdp(String h) {
 		System.loadLibrary("udpSend");
 		udpSend jni = new udpSend();
-		jni.init(port);
+		jni.init(h.getBytes(), port);
 		byte[] b = new byte[l];
 		Log.e(TAG, "time start ");
 		int sum = 0;
@@ -126,5 +128,19 @@ public class UdpSpeed {
 		}
 		time = System.currentTimeMillis() - time;
 		Log.e(TAG, "" + (sum * 8000.0 / 1024 / time) + " kbps");
+	}
+
+	public static void fragment() {
+		FileFragment f = new FileFragment(0, 63 * 1024, 0, 63 * 1024);
+		try {
+			f.setData(new byte[63 * 1024]);
+			Log.e(TAG, "time start ");
+			for (int i = 0; i < 100; i++) {
+				f.toBytes();
+			}
+			Log.e(TAG, "time stop ");
+		} catch (FileFragmentException e1) {
+			e1.printStackTrace();
+		}
 	}
 }

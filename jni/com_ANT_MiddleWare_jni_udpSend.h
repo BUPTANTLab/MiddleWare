@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_ANT_MiddleWare_jni_udpSend_init
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jbyteArray, jint);
 
 /*
  * Class:     com_ANT_MiddleWare_jni_udpSend

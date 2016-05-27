@@ -18,11 +18,12 @@ struct sockaddr_in server; /* server's address information */
 socklen_t len;
 
 JNIEXPORT void JNICALL Java_com_ANT_MiddleWare_jni_udpSend_init
-(JNIEnv *, jobject, jint p)
+(JNIEnv * env, jobject, jbyteArray h, jint p)
 {
+	char* data = (char*) env->GetByteArrayElements(h, 0);
 	port = p;
 
-	if ((he = gethostbyname("192.168.1.255")) == NULL)
+	if ((he = gethostbyname(data)) == NULL)
 	{
 		LOGE("gethostbyname() error\n");
 		return;
@@ -33,13 +34,17 @@ JNIEXPORT void JNICALL Java_com_ANT_MiddleWare_jni_udpSend_init
 		LOGE("socket() error\n");
 		return;
 	}
+
+	const int so_broadcast = 1;
+	int ret = setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof(so_broadcast));
+
 	bzero(&server, sizeof(server));
 	server.sin_family = AF_INET;
 	server.sin_port = htons(port);
 	server.sin_addr = *((struct in_addr *) he->h_addr);
 
 	len = sizeof(struct sockaddr_in);
-	LOGE("init %d", port);
+	LOGE("init %s %d", data, port);
 }
 
 JNIEXPORT jint JNICALL Java_com_ANT_MiddleWare_jni_udpSend_send(JNIEnv * env,
@@ -49,8 +54,6 @@ jobject, jbyteArray strIn, jint l)
 	int s = sendto(sockfd, data, l, 0, (struct sockaddr *) &server, len);
 	if(s<=0){
 		LOGE("errno %d", errno);
-	}else{
-		LOGE("s %d", s);
 	}
 	return s;
 }
