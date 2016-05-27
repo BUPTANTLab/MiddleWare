@@ -24,7 +24,8 @@ public class WiFiBroad extends WiFiPulic {
 
 	private Process proc;
 	private WifiManager wifi;
-	private MulticastSocket socket = null;
+	private MulticastSocket socketSend = null;
+	private MulticastSocket socketRecv = null;
 	public static final String multicastHost = "224.0.0.1";
 	public static final int localPort = 9988;
 	private TelephonyManager tm;
@@ -88,15 +89,18 @@ public class WiFiBroad extends WiFiPulic {
 			lock.acquire();
 		}
 
-		socket = new MulticastSocket(WiFiBroad.localPort);
+		socketSend = new MulticastSocket(WiFiBroad.localPort);
+		socketRecv = new MulticastSocket(WiFiBroad.localPort);
 		InetAddress group = InetAddress.getByName(WiFiBroad.multicastHost);
-		socket.joinGroup(group);
-		socket.setLoopbackMode(true); 
+		socketSend.joinGroup(group);
+		socketRecv.joinGroup(group);
+		socketSend.setLoopbackMode(true); 
+		socketRecv.setLoopbackMode(true); 
 
-		recvThd = new RecvMulti(po, contect, socket);
+		recvThd = new RecvMulti(po, contect, socketRecv);
 		recvThd.start();
 
-		sendThd = new SendMulti(socket, taskList);
+		sendThd = new SendMulti(socketSend, taskList);
 		sendThd.start();
 
 		objThd = new ObjectMulti(pi, contect, sendThd);
@@ -114,7 +118,7 @@ public class WiFiBroad extends WiFiPulic {
 		DatagramPacket dp = new DatagramPacket(data, data.length,
 				InetAddress.getByName(multicastHost), localPort);
 		synchronized (taskList) {
-			socket.send(dp);
+			socketSend.send(dp);
 		}
 	}
 
