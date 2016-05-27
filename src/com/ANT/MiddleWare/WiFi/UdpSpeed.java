@@ -25,6 +25,7 @@ public class UdpSpeed {
 	private static final int l = 65500;
 
 	public static void NormalUdp(String host) {
+		Log.e(TAG, "NormalUdp " + host);
 		DatagramSocket dataSocket = null;
 		try {
 			dataSocket = new DatagramSocket(port);
@@ -53,6 +54,7 @@ public class UdpSpeed {
 	}
 
 	public static void MultiUdp(String host) {
+		Log.e(TAG, "MultiUdp " + host);
 		MulticastSocket dataSocket = null;
 		try {
 			dataSocket = new MulticastSocket(port);
@@ -85,6 +87,7 @@ public class UdpSpeed {
 	}
 
 	public static void NioUdp(String host) {
+		Log.e(TAG, "NioUdp " + host);
 		DatagramChannel dc = null;
 		try {
 			dc = DatagramChannel.open();
@@ -111,10 +114,11 @@ public class UdpSpeed {
 		}
 	}
 
-	public static void JniUdp(String h) {
+	public static void JniUdp(String host) {
+		Log.e(TAG, "JniUdp " + host);
 		System.loadLibrary("udpSend");
 		udpSend jni = new udpSend();
-		jni.init(h.getBytes(), port);
+		jni.init(host.getBytes(), port);
 		byte[] b = new byte[l];
 		Log.e(TAG, "time start ");
 		int sum = 0;
@@ -131,14 +135,20 @@ public class UdpSpeed {
 	}
 
 	public static void fragment() {
-		FileFragment f = new FileFragment(0, 63 * 1024, 0, 63 * 1024);
+		Log.e(TAG, "fragment");
+		FileFragment f = new FileFragment(0, FileFragment.LIMIT_LEN, 0,
+				FileFragment.LIMIT_LEN);
 		try {
-			f.setData(new byte[63 * 1024]);
+			f.setData(new byte[FileFragment.LIMIT_LEN]);
 			Log.e(TAG, "time start ");
-			for (int i = 0; i < 100; i++) {
+			long time = System.currentTimeMillis();
+			for (int i = 0; i < d; i++) {
 				f.toBytes();
 			}
-			Log.e(TAG, "time stop ");
+			time = System.currentTimeMillis() - time;
+			Log.e(TAG, "fragment "
+					+ (FileFragment.LIMIT_LEN * d * 8000.0 / 1024 / time)
+					+ " kbps");
 		} catch (FileFragmentException e1) {
 			e1.printStackTrace();
 		}
