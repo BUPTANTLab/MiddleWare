@@ -18,25 +18,24 @@ import android.util.Log;
 
 import com.ANT.MiddleWare.Entities.FileFragment;
 import com.ANT.MiddleWare.PartyPlayerActivity.MainFragment;
-import com.ANT.MiddleWare.WiFi.UdpSpeed;
 import com.ANT.MiddleWare.WiFi.WiFiFactory;
 
 public class SendMulti extends Thread {
 	private static final String TAG = SendMulti.class.getSimpleName();
 
 	private MulticastSocket socket;
-	private LinkedList<byte[]> taskList;
+	private LinkedList<FileFragment> taskList;
 	//private Stack<FileFragment> convertStack= new Stack<FileFragment>();
 	public HashSet<Integer> repeat = new HashSet<Integer>();
 
-	public SendMulti(MulticastSocket mSocket, LinkedList<byte[]> mTaskList) {
+	public SendMulti(MulticastSocket mSocket, LinkedList<FileFragment> mTaskList) {
 		this.socket = mSocket;
 		this.taskList = mTaskList;
 		//this.convertStack=mConvertStack;
 	}
 
-	public boolean isRepeat(byte[] f) {
-		if (f.length > 3000) { //this means that it is not notify message
+	public boolean isRepeat(FileFragment f) {
+		if (f.getSegmentID() > 0) {
 			int hash = f.hashCode();
 			synchronized (repeat) {
 				if (repeat.contains(hash)) {
@@ -47,8 +46,8 @@ public class SendMulti extends Thread {
 		return false;
 	}
 
-	public void addRepeat(byte[] f) {
-		if (f.length > 3000) { //this means that it is not notify message
+	public void addRepeat(FileFragment f) {
+		if (f.getSegmentID() > 0) {
 			int hash = f.hashCode();
 			synchronized (repeat) {
 				repeat.add(hash);
@@ -65,43 +64,42 @@ public class SendMulti extends Thread {
 		}
 	}
 
-	private synchronized boolean send(byte[] f) {
+	private synchronized boolean send(FileFragment f) {
 		if (isRepeat(f)) {
 			return true;
 		}
 		if (MainFragment.configureData.isNoWiFiSend())
 			return true;
 		try {
-			//byte[] data = f.toBytes();
+			byte[] data = f.toBytes();
 			//测试发送时间写入文件
-//			String startOffset=String.valueOf(f.getStartIndex());
-//			String stopOffset=String.valueOf(f.getStopIndex());
-//			String segId=String.valueOf(f.getSegmentID());
-//			String flen=String.valueOf(f.getStopIndex()-f.getStartIndex());
-//			SimpleDateFormat format=new SimpleDateFormat("HH:mm:ss:SSS");
-//			Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-//			String str = format.format(curDate);
-//			String send="sId:"+segId+"\t start:"+startOffset+"\t stop:"
-//			+stopOffset+"\t time:"+System.currentTimeMillis()+"\t "+str+"\n";
-//			String dir=Environment.getExternalStorageDirectory().getAbsolutePath()+"/lbroadtest/";
-//			File filedir=new File(dir);
-//			filedir.mkdir();
-//			int num=MainFragment.configureData.getFileNum();
-//			File file=new File(dir, "lsend_10k_sp0_"+num+".txt");
-//			if(!file.exists()){
-//				file.createNewFile();
-//			}
-//			FileOutputStream fos =new FileOutputStream(file, true);
-//			fos.write(send.getBytes());
-//			fos.close();
-//			
-			DatagramPacket dp = new DatagramPacket(f, f.length,
+			String startOffset=String.valueOf(f.getStartIndex());
+			String stopOffset=String.valueOf(f.getStopIndex());
+			String segId=String.valueOf(f.getSegmentID());
+			String flen=String.valueOf(f.getStopIndex()-f.getStartIndex());
+			SimpleDateFormat format=new SimpleDateFormat("HH:mm:ss:SSS");
+			Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+			String str = format.format(curDate);
+			String send="sId:"+segId+"\t start:"+startOffset+"\t stop:"
+			+stopOffset+"\t time:"+System.currentTimeMillis()+"\t "+str+"\n";
+			String dir=Environment.getExternalStorageDirectory().getAbsolutePath()+"/lbroadtest/";
+			File filedir=new File(dir);
+			filedir.mkdir();
+			int num=MainFragment.configureData.getFileNum();
+			File file=new File(dir, "lsend_10k_sp0_"+num+".txt");
+			if(!file.exists()){
+				file.createNewFile();
+			}
+			FileOutputStream fos =new FileOutputStream(file, true);
+			fos.write(send.getBytes());
+			fos.close();
+			
+			DatagramPacket dp = new DatagramPacket(data, data.length,
 					InetAddress.getByName(WiFiBroad.multicastHost),
 					//InetAddress.getByName("192.168.1.111"),
 					WiFiBroad.localPort);
-//			Log.d(TAG, "send "+startOffset+" "+stopOffset+" "+flen+" "+segId+" "+System.currentTimeMillis());
+			Log.d(TAG, "send "+startOffset+" "+stopOffset+" "+flen+" "+segId+" "+System.currentTimeMillis());
 			socket.send(dp);
-			UdpSpeed.MultiUdp("224.0.0.1");
 			addRepeat(f);
 			return true;
 		} catch (UnknownHostException e) {
@@ -128,7 +126,7 @@ public class SendMulti extends Thread {
 //				continue;
 //			}
 			
-			byte[] ff = null;
+			FileFragment ff = null;
 			synchronized (taskList) {
 				
 				if (taskList.isEmpty()) {
@@ -136,18 +134,18 @@ public class SendMulti extends Thread {
 					continue;
 				}
 				ff = taskList.pop();
-//				Log.d("localsend",ff.toString()+" "+ff.getSegmentID()+" "+System.currentTimeMillis());
+				Log.d("localsend",ff.toString()+" "+ff.getSegmentID()+" "+System.currentTimeMillis());
 			}
 			if (ff == null) {
 				continue;
 			}
-//			if (ff.isTooBig()) {
-//				Log.d("sendtoobig", ff.toString()+" "+ff.getSegmentID());
-//				WiFiFactory.insertF(ff);
-			else {
+			if (ff.isTooBig()) {
+				Log.d("sendtoobig", ff.toString()+" "+ff.getSegmentID());
+				WiFiFactory.insertF(ff);
+			} else {
 				boolean is = send(ff);
 				if (!is) {
-//					Log.d("sendfail", ff.toString()+" "+ff.getSegmentID());
+					Log.d("sendfail", ff.toString()+" "+ff.getSegmentID());
 					synchronized (taskList) {
 						taskList.addFirst(ff);
 					}
