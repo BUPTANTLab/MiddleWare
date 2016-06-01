@@ -37,18 +37,18 @@ public class SendMulti extends Thread {
 		return false;
 	}
 	
-	public static int pseudoHash(byte[] f) {
-		int result = 17;
-		for (byte l:f) {
-			result = 31 * result + (int) l;
-		}
-		return result;
-	}
+//	public static int pseudoHash(byte[] f) {
+//		int result = 17;
+//		for (byte l:f) {
+//			result = 31 * result + (int) l;
+//		}
+//		return result;
+//	}
 
 	public void addRepeat(byte[] f) {
 		// if--judge whether f is notify message 
 		if (f.length > 3000) {
-			int hash = pseudoHash(f);
+			int hash = Arrays.hashCode(f);
 			synchronized (repeat) {
 				repeat.add(hash);
 			}
@@ -58,7 +58,7 @@ public class SendMulti extends Thread {
 	public void removeRepeat(FileFragment f) {
 		if (f.getSegmentID() > 0) {
 			byte[] ff = f.toBytes();
-			int hash = pseudoHash(ff);
+			int hash = Arrays.hashCode(ff);
 			synchronized (repeat) {
 				repeat.remove(hash);
 			}
