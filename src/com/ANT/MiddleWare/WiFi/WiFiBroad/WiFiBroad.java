@@ -59,7 +59,7 @@ public class WiFiBroad extends WiFiPulic {
 		Log.v(TAG, "ip " + myIP);
 		proc = Runtime.getRuntime().exec("su");
 		DataOutputStream os = new DataOutputStream(proc.getOutputStream());
-//		os.writeBytes("dmesg > /data/misc/wifi/2dmesg.txt\n");
+		os.writeBytes("dmesg > /data/misc/wifi/2dmesg.txt\n");
 //		os.writeBytes("echo $PATH >/data/misc/wifi/path.txt\n");
 //		os.writeBytes("cd sbin\n");
 //		os.writeBytes("pwd >>/data/misc/wifi/pwd.txt\n");
