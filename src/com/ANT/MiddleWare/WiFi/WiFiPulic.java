@@ -9,8 +9,8 @@ import com.ANT.MiddleWare.Entities.FileFragment;
 import com.ANT.MiddleWare.Entities.FileFragment.FileFragmentException;
 
 public abstract class WiFiPulic {
-	protected final static LinkedList<FileFragment> taskList = new LinkedList<FileFragment>();
-	//protected Stack<FileFragment> convertStack= new Stack<FileFragment>();
+	protected final static LinkedList<byte[]> taskList = 
+			new LinkedList<byte[]>();
 	protected Context contect;
 
 	public WiFiPulic(Context contect) {
@@ -32,17 +32,12 @@ public abstract class WiFiPulic {
 			}
 			synchronized (taskList) {
 				for (FileFragment f : fragArray) {
-					taskList.add(f);
+					taskList.add(f.toBytes());
 				}
-//				while (!taskList.isEmpty()) {
-//			         Log.d("convert", "before enqueue,taskList size: " + String.valueOf(taskList.size()));
-//			           FileFragment ff = taskList.pop();
-//			           //convertStack.add(ff);
-//			    }
 			}
 		} else {
 			synchronized (taskList) {
-				taskList.add(fm);
+				taskList.add(fm.toBytes());
 			}
 		}
 	}
