@@ -22,5 +22,6 @@
     <string name="action_mores">MORES SETTING</string>
     <string name="action_wifi_switch">WiFi SWITCH</string>
     <string name="action_cell_mode">CELL MODE</string>
+    <string name="bt_port">12345</string>
 
 </resources>
